@@ -1,3 +1,4 @@
+local move_module = require "pokemon.Move"
 
 Pokemon = {}
 

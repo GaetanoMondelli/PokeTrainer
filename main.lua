@@ -1,4 +1,4 @@
-local pokemon_libray = require "pokemon.Pokemon"
+local pokemon_module = require "pokemon.Pokemon"
 
 local my_pokemon = Pokemon:new()
 
