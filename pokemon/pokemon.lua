@@ -8,9 +8,14 @@ function Pokemon:new()
         value =  {},
         addr = {},
 
-        set_stat = function(self, stat, memory_address)
+        set_stat = function(self, stat, size, memory_address)
             self.addr[stat] = memory_address
-            self.value[stat] = readword(self.addr[stat])
+            if (size == 1)
+            then
+                self.value[stat] = readbyte(self.addr[stat])
+            else
+                self.value[stat] = readword(self.addr[stat])
+            end                 
         end,
 
         get_stat = function(self, stat)
@@ -21,7 +26,7 @@ function Pokemon:new()
             old_stat = self.value[stat]  
             new_stat =  self:get_stat(stat)
 
-            if (old_stat ~= new_stat)
+            if (old_stat ~= new_stat) --or new battle id
             then
                 print(stat..","..old_stat..","..new_stat)
             end
