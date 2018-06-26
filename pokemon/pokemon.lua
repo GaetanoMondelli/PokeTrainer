@@ -3,8 +3,9 @@ local memory = require "pokemon.Memory"
 
 Pokemon = {}
 
-function Pokemon:new()
+function Pokemon:new(label)
     local pokemon = {
+        name = label,
         value =  {},
         addr = {},
 
@@ -23,14 +24,17 @@ function Pokemon:new()
         end,
 
         get_stat_event = function(self, stat)
+            local file = io.open("poke.log", "a")
+            io.output(file)
             old_stat = self.value[stat]  
             new_stat =  self:get_stat(stat)
 
             if (old_stat ~= new_stat) --or new battle id
             then
-                print(stat..","..old_stat..","..new_stat)
+                io.write(self.name..","..stat..","..old_stat..","..new_stat.."\n")
             end
             self.value[stat] = new_stat
+            io.close(file)
         end,
 
         update = function(self)
