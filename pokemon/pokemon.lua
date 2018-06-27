@@ -10,15 +10,14 @@ function Pokemon:new(label)
         --to do remove size (all words)
         set_stat = function(self, stat, size, memory_address)
             self.addr[stat] = memory_address    
-            if (size == 1)
-            then
-                self.value[stat] = -1 --readbyte(self.addr[stat])
-            else
-                self.value[stat] = -1 --readword(self.addr[stat])
-            end                 
+            self.value[stat] = -1
         end,
 
         get_stat = function(self, stat)
+            if stat == "type1" or stat == "type2"
+            then
+                return readbyte(self.addr[stat])
+            end
             return readword(self.addr[stat])
         end,
 
@@ -28,7 +27,7 @@ function Pokemon:new(label)
             old_stat = self.value[stat]  
             new_stat =  self:get_stat(stat)
 
-            if (old_stat ~= new_stat) --or new battle id
+            if (old_stat ~= new_stat)
             then
                 io.write(self.name..","..stat..","..old_stat..","..new_stat.."\n")
             end

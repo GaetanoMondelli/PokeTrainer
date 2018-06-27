@@ -5,8 +5,10 @@ GameManager = {}
 function GameManager:new(bid)
     local gmanager = {
         battle_addr, turn_addr,
-        battle=-1,
-        turn=-1,
+        battle = -1,
+        turn = -1,
+        critical = -1,
+        miss = -1,
 
         set_turn = function(self, memory_address)
             self.turn_addr = memory_address              
@@ -22,6 +24,22 @@ function GameManager:new(bid)
 
         get_battle = function(self)
             return readbyte(self.battle_addr)
+        end,
+
+        set_miss = function(self, memory_address)
+            self.miss_addr = memory_address
+        end,
+
+        get_miss = function(self, memory_address)
+            return readbyte(self.miss_addr)
+        end,
+
+        set_critical = function(self, memory_address)
+            self.critical_addr = memory_address
+        end,
+
+        get_critical = function(self, memory_address)
+            return readbyte(self.critical)
         end,
    
         update = function(self)
