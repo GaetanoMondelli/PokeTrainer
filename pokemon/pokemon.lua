@@ -1,4 +1,3 @@
-local move_module = require "pokemon.Move"
 local memory = require "pokemon.Memory"
 
 Pokemon = {}
@@ -8,14 +7,14 @@ function Pokemon:new(label)
         name = label,
         value =  {},
         addr = {},
-
+        --to do remove size (all words)
         set_stat = function(self, stat, size, memory_address)
-            self.addr[stat] = memory_address
+            self.addr[stat] = memory_address    
             if (size == 1)
             then
-                self.value[stat] = readbyte(self.addr[stat])
+                self.value[stat] = -1 --readbyte(self.addr[stat])
             else
-                self.value[stat] = readword(self.addr[stat])
+                self.value[stat] = -1 --readword(self.addr[stat])
             end                 
         end,
 
@@ -42,7 +41,6 @@ function Pokemon:new(label)
                 self:get_stat_event(k)
             end
         end                
-
     }
     return pokemon
 end
