@@ -1,20 +1,21 @@
+from pprint import pprint
+import json
+
 trainer_name = 'gaetano'
 opponent_name = 'opponent'
 manager_name = 'game'
 
 with open('poke.log') as f:
-    events = f.readlines()
+    raw_events = f.readlines()
 
-events = [(x[:-1]).split(',') for x in events] 
-
+raw_events = [(x[:-1]).split(',') for x in raw_events] 
+events = []
+actions = []
 my_pokemon = {}
 opponent = {}
 manager = {}
 
 battle_active = False
-
-active = None
-passive = None
 
 def bind_event(event):
     if event[0] == trainer_name:
@@ -24,44 +25,55 @@ def bind_event(event):
     if event[0] == manager_name:
         manager[event[1]] = event[3]
 
-def print_pokemon(pokemon):
-    pass
+def get_snapshot(pokemon):
+    pokemon_snapshot = '{'    
+    pokemon_snapshot += "'attack': '{0}', 'defense':'{1}',".format(pokemon['attack'], pokemon['defense']) 
+    pokemon_snapshot += "'hp':'{0}', 'max_hp': '{1}',".format(pokemon['hp'], pokemon['max_hp'])
+    pokemon_snapshot += "'pokeid': '{0}', 'special': '{1}', 'speed': '{2}',".format(pokemon['pokeid'], pokemon['special'], pokemon['speed'])
+    pokemon_snapshot += "'type1': '{0}', 'type2': '{1}'".format(pokemon['type1'], pokemon['type2'])
+    pokemon_snapshot += '}'
+    return pokemon_snapshot
+
+def get_action(pokemon):
+    action = '{'
+    action += "'pokeid':'{0}', move:'{1}'".format(pokemon['pokeid'], pokemon['move'])
+    action += '}'
+    return action
 
 
-
-for event in events:
-    ''' 
-    TODO: This transition can define
-          who has performed the attack
-
-        if my_pokemon['speed'] > opponent['speed']:
-            battle,128,x   gaetano
-            battle,100,x   gaetano
-        else
-            battle,164,x   opponent
-            battle, 78,x   opponent
-    '''
+for event in raw_events:
     bind_event(event)
     battle_active = ('battle' in manager and int(manager['battle']) > 0)
     
-    #if battle_active and event[1] == 'turn':
-    #   print(event[3])
-    #   print('my ',my_pokemon)
-    #   print('op ',opponent)
+    if battle_active and event[2] == 'move': #and int(manager['turn']) > 0:
 
-    if battle_active and event[1] == 'move': #and int(manager['turn']) > 0:
-        #print(event[3])
-        #if event[0] == opponent_name:
-        #    active = 
-        print(manager['turn'])
-        print('my ',my_pokemon)
-        print('op ',opponent)
-        print (event[0] +' uses'+ event[3])
-        print('----------------------')
+        performer = my_pokemon if event[1] == trainer_name else opponent
+        snapshot = {}
+        snapshot[trainer_name] = get_snapshot(my_pokemon)
+        snapshot[opponent_name] = get_snapshot(opponent)
+        events.append(snapshot)
+        action = get_action(performer)
+        actions.append(action)
 
 
+battle_events = []
+count = 0
 
 
+for action in actions:
+    if(count +2 < len(events)):  
+        battle_event = {}
+        battle_event['action'] = action
+        battle_event['before'] = events[count+1]
+        battle_event['after'] =  events[count+2]
+        battle_events.append(battle_event)
+        count+=1
+
+pprint(battle_events)
+
+with open('poke_event.log', 'a') as out_file:
+    for event in battle_events:
+        out_file.write(json.dumps(event, sort_keys=True)+'\n')
 
 
 
