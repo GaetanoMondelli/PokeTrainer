@@ -34,9 +34,9 @@ def get_snapshot(pokemon):
     pokemon_snapshot += '}'
     return pokemon_snapshot
 
-def get_action(pokemon):
+def get_action(pokemon, trainer):
     action = '{'
-    action += "'pokeid':'{0}', move:'{1}'".format(pokemon['pokeid'], pokemon['move'])
+    action += "'pokeid':'{0}', move:'{1}', trainer:'{2}'".format(pokemon['pokeid'], pokemon['move'], trainer)
     action += '}'
     return action
 
@@ -46,28 +46,27 @@ for event in raw_events:
     battle_active = ('battle' in manager and int(manager['battle']) > 0)
     
     if battle_active and event[2] == 'move': #and int(manager['turn']) > 0:
-
         performer = my_pokemon if event[1] == trainer_name else opponent
         snapshot = {}
         snapshot[trainer_name] = get_snapshot(my_pokemon)
         snapshot[opponent_name] = get_snapshot(opponent)
         events.append(snapshot)
-        action = get_action(performer)
-        actions.append(action)
+        if(event[3] == 'finished'):
+            action = get_action(performer, event[1])
+            actions.append(action)
 
+print(len(events))
+print(len(actions))
 
 battle_events = []
 count = 0
-
-
 for action in actions:
-    if(count +2 < len(events)):  
         battle_event = {}
         battle_event['action'] = action
-        battle_event['before'] = events[count+1]
-        battle_event['after'] =  events[count+2]
+        battle_event['before'] = events[count]
+        battle_event['after'] =  events[count+1]
         battle_events.append(battle_event)
-        count+=1
+        count+=2
 
 pprint(battle_events)
 
