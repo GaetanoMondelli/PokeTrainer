@@ -87,12 +87,12 @@ function GameManager:new(bid)
                 
                 if (new_battle_turn == 128 or new_battle_turn == 100)
                 then
-                    io.write(timestamp..",game, gaetano, move, started\n")
+                    io.write(timestamp..",game,gaetano,move,started\n")
                 end
 
                 if (new_battle_turn == 164 or new_battle_turn == 78)
                 then
-                    io.write(timestamp..",game, opponent, move, started\n")
+                    io.write(timestamp..",game,opponent,move,started\n")
                 end
             end 
 
