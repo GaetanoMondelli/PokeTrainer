@@ -18,12 +18,12 @@ manager = {}
 battle_active = False
 
 def bind_event(event):
-    if event[0] == trainer_name:
-        my_pokemon[event[1]] = event[3]
-    if event[0] == opponent_name:
-        opponent[event[1]] = event[3]
-    if event[0] == manager_name:
-        manager[event[1]] = event[3]
+    if event[1] == trainer_name:
+        my_pokemon[event[2]] = event[4]
+    if event[1] == opponent_name:
+        opponent[event[2]] = event[4]
+    if event[1] == manager_name:
+        manager[event[2]] = event[4]
 
 def get_snapshot(pokemon):
     pokemon_snapshot = '{'    
@@ -34,9 +34,9 @@ def get_snapshot(pokemon):
     pokemon_snapshot += '}'
     return pokemon_snapshot
 
-def get_action(pokemon, trainer):
+def get_action(pokemon, trainer, game_timestamp):
     action = '{'
-    action += "'pokeid':'{0}', move:'{1}', trainer:'{2}'".format(pokemon['pokeid'], pokemon['move'], trainer)
+    action += "'time':'{0}', pokeid':'{1}', move:'{2}', trainer:'{3}'".format(game_timestamp, pokemon['pokeid'], pokemon['move'], trainer)
     action += '}'
     return action
 
@@ -45,19 +45,19 @@ for event in raw_events:
     bind_event(event)
     battle_active = ('battle' in manager and int(manager['battle']) > 0)
     
-    if battle_active and event[2] == 'move': #and int(manager['turn']) > 0:
-        performer = my_pokemon if event[1] == trainer_name else opponent
+    if battle_active and event[3] == 'move': #and int(manager['turn']) > 0:
+        performer = my_pokemon if event[2] == trainer_name else opponent
         snapshot = {}
         snapshot[trainer_name] = get_snapshot(my_pokemon)
         snapshot[opponent_name] = get_snapshot(opponent)
         events.append(snapshot)
-        if(event[3] == 'finished'):
-            action = get_action(performer, event[1])
+        print(event)        
+        if(event[4] == 'finished'):
+            action = get_action(performer, event[2], event[0])
             actions.append(action)
 
 print(len(events))
 print(len(actions))
-
 battle_events = []
 count = 0
 for action in actions:
