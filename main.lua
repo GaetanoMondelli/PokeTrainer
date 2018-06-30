@@ -3,6 +3,7 @@ local game_manager_module = require "pokemon.game_manager"
 local my_pokemon = Pokemon:new('gaetano')
 local opponent_pokemon = Pokemon:new('opponent')
 local game_manager = GameManager:new() 
+local game_timestamp = 0
 
 my_pokemon:set_stat('attack' ,  2, 0xD025)
 my_pokemon:set_stat('defense',  2, 0xD027)
@@ -36,13 +37,14 @@ opponent_pokemon:set_stat('type2',   1, 0xCFEB)
 opponent_pokemon:set_stat('level',   1, 0xCFF3)
 
 while true do
-    game_manager:update()
-    opponent_pokemon:update()
-    my_pokemon:update()
     hours = readbyte(0xDA41)
     minutes = readbyte(0xDA43)
     seconds = readbyte(0xDA44) 
+    game_timestamp = hours..":"..minutes..":"..seconds
     gui.text(0,30,"PokeTrainer Script running", "white")
-    gui.text(0,40,"PokeTimeStamp "..hours..":"..minutes..":"..seconds, "white")
+    gui.text(0,40,"PokeTimeStamp "..game_timestamp, "white")
+    game_manager:update(game_timestamp)
+    opponent_pokemon:update(game_timestamp)
+    my_pokemon:update(game_timestamp)
     emu.frameadvance()
 end
